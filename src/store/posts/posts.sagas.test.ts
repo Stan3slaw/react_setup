@@ -1,3 +1,4 @@
+import type { AxiosError } from 'axios';
 import { testSaga } from 'redux-saga-test-plan';
 
 import postsApiService from '../../core/services/api/posts/posts-api.service';
@@ -40,7 +41,7 @@ describe('PostsSagas', () => {
 
     it('should return error on failure', () => {
       // Given
-      const expectedError: any = {
+      const expectedError = {
         response: {
           data: {
             statusCode: 404,
@@ -56,7 +57,7 @@ describe('PostsSagas', () => {
         .next()
         .call(postsApiService.getPosts)
         // Then
-        .throw(expectedError)
+        .throw(expectedError as AxiosError)
         .put({ type: postsActions.getPostsFailed.type, payload: expectedError.response.data })
         .next()
         .isDone();

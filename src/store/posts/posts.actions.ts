@@ -1,9 +1,9 @@
 import { createAction } from '@reduxjs/toolkit';
 
+import { postsSlice } from './posts.slice';
+
 const getPostsInitialized = createAction('getPosts/initialized');
-const getPostsRequested = createAction('getPosts/requested');
-const getPostsSuccessful = createAction('getPosts/successful');
-const getPostsFailed = createAction('getPosts/failed');
+const { getPostsRequested, getPostsSuccessful, getPostsFailed } = postsSlice.actions;
 
 export const postsActions = {
   getPostsInitialized,
