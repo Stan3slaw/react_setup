@@ -55,10 +55,7 @@
         "exceptAfterSingleLine": true
       }
     ],
-    "padding-line-between-statements": [
-      "error",
-      { "blankLine": "always", "prev": "const", "next": "export" }
-    ],
+    "padding-line-between-statements": ["error", { "blankLine": "always", "prev": "const", "next": "export" }],
     "import/no-cycle": "off",
     "import/no-duplicates": "error",
     "import/imports-first": ["error", "absolute-first"],
@@ -118,13 +115,15 @@
       }
     },
     {
-      "files": [
-        "src/store/**/*.*.ts",
-        "src/core/constants/*.constants.ts",
-        "src/core/services/**/constants.ts"
-      ],
+      "files": ["src/store/**/*.*.ts", "src/core/constants/*.constants.ts", "src/core/services/**/constants.ts"],
       "rules": {
         "import/prefer-default-export": "off"
+      }
+    },
+    {
+      "files": ["src/store/**/*.slice.ts"],
+      "rules": {
+        "no-param-reassign": "off"
       }
     },
     {

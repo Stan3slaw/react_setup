@@ -11,10 +11,11 @@ const mainLayoutStyles = {
   justifyContent: 'center',
   margin: '40px 65px 0px 65px',
 };
+
 const App: React.FC = () => {
   const dispatch = useDispatch();
 
-  const posts = useSelector(postsSelectors.getPosts);
+  const posts = useSelector(postsSelectors.selectAll);
 
   useEffect(() => {
     dispatch(postsActions.getPostsInitialized());

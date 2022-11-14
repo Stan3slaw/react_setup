@@ -1,8 +1,4 @@
 import type { AppState } from '..';
-import type { GetPostResponseDto } from '../../core/types/api/posts-api.types';
+import { postsAdapter } from './posts.slice';
 
-const getPosts = (state: AppState): GetPostResponseDto[] => state.posts.posts;
-
-export const postsSelectors = {
-  getPosts,
-};
+export const postsSelectors = postsAdapter.getSelectors((state: AppState) => state.posts);
