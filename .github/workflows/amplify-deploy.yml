@@ -21,6 +21,9 @@ jobs:
         with:
           node-version: '${{ steps.nvm.outputs.NVMRC }}'
 
+      - name: Install Amplify CLI
+        run: npm install -g @aws-amplify/cli
+
       - name: Install Dependencies
         run: npm install # Install npm dependencies
 
