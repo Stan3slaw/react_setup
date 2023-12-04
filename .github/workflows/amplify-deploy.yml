@@ -21,9 +21,6 @@ jobs:
         with:
           node-version: '${{ steps.nvm.outputs.NVMRC }}'
 
-      - name: Install Amplify CLI
-        run: npm install -g @aws-amplify/cli
-
       - name: Install Dependencies
         run: npm install # Install npm dependencies
 
@@ -41,7 +38,11 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
-          # Replace with your AWS region
 
-      - name: Deploy to AWS Amplify
-        run: amplify publish
+      - name: Install Amplify CLI and Deploy
+        run: |
+          npm install -g @aws-amplify/cli
+          amplify publish
+        env:
+          AWS_DEFAULT_REGION: eu-central-1
+          AWS_REGION: eu-central-1
