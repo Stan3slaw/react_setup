@@ -1,7 +1,10 @@
 import type { RequestService } from '../request-service/request.service';
 
 export default abstract class ApiService {
-  constructor(protected requestService: RequestService, protected baseUrl: string) {}
+  constructor(
+    protected requestService: RequestService,
+    protected baseUrl: string,
+  ) {}
 
   protected getUrl = (url: string): string => {
     const trimedBaseUrl = this.baseUrl.replace(/\/$/, '');
