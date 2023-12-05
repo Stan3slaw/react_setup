@@ -5,6 +5,11 @@ on:
     branches:
       - main # Trigger the workflow on push to the main branch
 
+env:
+  NAME: 'react_setup'
+  REGION: 'eu-central-1'
+  BRANCH_NAME: ${{ github.ref_name }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -39,17 +44,17 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-central-1
+          aws-region: ${{env.REGION}}
 
       - id: amplify
         shell: bash
         run: |
-          res=$(aws amplify list-apps --output text --query "apps[?not_null(name == '${{ inputs.name }}')].name")
+          res=$(aws amplify list-apps --output text --query "apps[?not_null(name == '${{ env.NAME }}')].name")
           if [ -z "$res" ]; then
-            echo "Project ${{ inputs.name }} not exist"
+            echo "Project ${{ env.NAME }} not exist"
             exit 1
           else
-            echo id=$(aws amplify list-apps --output text --query "apps[?not_null(name == '${{ inputs.name }}')].appId") >> $GITHUB_OUTPUT
+            echo id=$(aws amplify list-apps --output text --query "apps[?not_null(name == '${{ env.NAME }}')].appId") >> $GITHUB_OUTPUT
           fi
 
       - name: Start AWS Amplify Job
