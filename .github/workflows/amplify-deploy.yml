@@ -22,7 +22,7 @@ jobs:
         run: echo NVMRC=$(cat .nvmrc) >> $GITHUB_OUTPUT
         id: nvm
 
-      - name: Set up Node.js
+      - name: Set Up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '${{ steps.nvm.outputs.NVMRC }}'
@@ -39,7 +39,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Configure AWS credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -64,3 +64,21 @@ jobs:
           --job-type RELEASE
           --output text
           --query "jobSummary.jobId") >> $GITHUB_OUTPUT
+
+      - name: Check Amplify Job Status
+        run: |
+          while [[ "$(aws amplify get-job --app-id ${{ steps.amplify.outputs.id }} \
+                                          --branch-name $BRANCH_NAME \
+                                          --job-id ${{ steps.amplify_job.outputs.id }} \
+                                          --output text \
+                                          --query "job.summary.status")" =~ ^(RUNNING|PENDING)$ ]]; do sleep 10; done
+      - id: res
+        if: always()
+        shell: bash
+        run: |
+          status=$(aws amplify get-job --app-id ${{ steps.amplify.outputs.id }} \
+                                       --branch-name $BRANCH_NAME \
+                                       --job-id ${{ steps.amplify_job.outputs.id }} \
+                                       --output text --query 'job.summary.status')
+          echo "status=$status" >> $GITHUB_OUTPUT
+          if [[ $status != "SUCCEED" ]]; then exit 1; fi
