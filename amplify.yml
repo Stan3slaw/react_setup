@@ -1,10 +1,14 @@
 version: 1
 frontend:
   phases:
+    install:
+      commands:
+        - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+        - . ~/.nvm/nvm.sh
     preBuild:
       commands:
         - nvm install && nvm use
-        - npm i
+        - npm ci
     build:
       commands:
         - npm run build
