@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4 # Checks-out repository under $GITHUB_WORKSPACE, so job can access it
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Read .nvmrc
         run: echo NVMRC=$(cat .nvmrc) >> $GITHUB_OUTPUT
@@ -22,10 +23,10 @@ jobs:
           node-version: '${{ steps.nvm.outputs.NVMRC }}'
 
       - name: Install Dependencies
-        run: npm install # Install npm dependencies
+        run: npm install
 
       - name: Build
-        run: npm run build # Build React application
+        run: npm run build
 
   deploy:
     runs-on: ubuntu-latest
@@ -39,10 +40,18 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
 
-      - name: Install Amplify CLI and Deploy
+      - name: Install AWS Amplify CLI
+        run: npm install -g @aws-amplify/cli
+
+      - name: Initialize Amplify Conditional
         run: |
-          npm install -g @aws-amplify/cli
+          amplify init --amplify '{"projectName":"myApp","envName":"dev","defaultEditor":"code"}' --providers '{"awscloudformation":{"configLevel":"project","useProfile":false,"accessKeyId":"${{ secrets.AWS_ACCESS_KEY_ID }}","secretAccessKey":"${{ secrets.AWS_SECRET_ACCESS_KEY }}","region":"eu-central-1"}}' --yes
+        env:
+          AWS_REGION: eu-central-1
+
+      - name: Deploy to Amplify
+        run: |
+          amplify add hosting
           amplify publish
         env:
-          AWS_DEFAULT_REGION: eu-central-1
           AWS_REGION: eu-central-1
