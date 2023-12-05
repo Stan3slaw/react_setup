@@ -33,25 +33,29 @@ jobs:
     needs: build # This job runs after the build job is successfully completed
 
     steps:
+      - uses: actions/checkout@v4
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
 
-      - name: Install AWS Amplify CLI
-        run: npm install -g @aws-amplify/cli
-
-      - name: Initialize Amplify Conditional
+      - id: amplify
+        shell: bash
         run: |
-          amplify init --amplify '{"projectName":"myApp","envName":"dev","defaultEditor":"code"}' --providers '{"awscloudformation":{"configLevel":"project","useProfile":false,"accessKeyId":"${{ secrets.AWS_ACCESS_KEY_ID }}","secretAccessKey":"${{ secrets.AWS_SECRET_ACCESS_KEY }}","region":"eu-central-1"}}' --yes
-        env:
-          AWS_REGION: eu-central-1
+          res=$(aws amplify list-apps --output text --query "apps[?not_null(name == '${{ inputs.name }}')].name")
+          if [ -z "$res" ]; then
+            echo "Project ${{ inputs.name }} not exist"
+            exit 1
+          else
+            echo id=$(aws amplify list-apps --output text --query "apps[?not_null(name == '${{ inputs.name }}')].appId") >> $GITHUB_OUTPUT
+          fi
 
-      - name: Deploy to Amplify
-        run: |
-          amplify add hosting
-          amplify publish
-        env:
-          AWS_REGION: eu-central-1
+      - name: Start AWS Amplify Job
+        id: amplify_job
+        run: echo id=$(aws amplify start-job --app-id ${{ steps.amplify.outputs.id }}
+          --branch-name $BRANCH_NAME
+          --job-type RELEASE
+          --output text
+          --query "jobSummary.jobId") >> $GITHUB_OUTPUT
